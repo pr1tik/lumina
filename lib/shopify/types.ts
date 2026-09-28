@@ -131,10 +131,27 @@ export type Collection = {
   path: string;
 };
 
+export type ProductSpec = {
+  label: string;
+  value: string;
+};
+
+export type ProductReview = {
+  author: string;
+  location: string;
+  rating: number;
+  date: string;
+  title: string;
+  comment: string;
+  verified: boolean;
+};
+
 export type Product = {
   id: string;
   title: string;
   handle: string;
+  modelNumber?: string;
+  edition?: string;
   categoryId?: string;
   description: string;
   descriptionHtml: string;
@@ -151,6 +168,11 @@ export type Product = {
   variants: ProductVariant[];
   images: Image[];
   availableForSale: boolean;
+  specs?: ProductSpec[];
+  inTheBox?: string[];
+  designerNote?: string;
+  stockCount?: number;
+  reviews?: ProductReview[];
 };
 
 export type ProductSortKey =

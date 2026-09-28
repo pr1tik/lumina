@@ -100,12 +100,11 @@ export default function MobileMenu({ collections }: MobileMenuProps) {
 
                 <ShopLinks label="Categories" collections={collections} />
 
-                <div className="mt-auto mb-6 text-sm leading-tight opacity-50">
-                  <p className="italic">Bold. Vibrant. Unapologetic.</p>
-                  <div className="mt-5">
-                    <p>Designs that demand attention.</p>
-                    <p>Vibrant colors, crafted with passion.</p>
-                    <p>Elegance with a wink — style first</p>
+                <div className="mt-auto mb-6 text-sm leading-relaxed text-muted-foreground">
+                  <p className="italic font-semibold text-foreground">Pure Form. Acoustic Precision. Sculptural Light.</p>
+                  <div className="mt-3 text-xs leading-normal opacity-80">
+                    <p>Architectural restraint and material permanence.</p>
+                    <p className="mt-2 text-[10px] font-mono uppercase tracking-widest opacity-60">Design Studio • New York & Stockholm</p>
                   </div>
                 </div>
                 <SidebarLinks className="gap-2 w-full" />

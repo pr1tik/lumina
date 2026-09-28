@@ -1,6 +1,6 @@
 'use client';
 
-import { ArrowRight, PlusCircleIcon } from 'lucide-react';
+import { ArrowRight, PlusCircleIcon, Sparkles, Check, Truck } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import { useFormStatus } from 'react-dom';
@@ -19,18 +19,50 @@ const CartContainer = ({ children, className }: { children: React.ReactNode; cla
   return <div className={cn('px-3 md:px-4', className)}>{children}</div>;
 };
 
+const FREE_SHIPPING_THRESHOLD = 250;
+
 const CartItems = ({ closeCart }: { closeCart: () => void }) => {
   const { cart } = useCart();
 
   if (!cart) return <></>;
 
+  const subtotalNum = cart.cost?.totalAmount?.amount ? parseFloat(cart.cost.totalAmount.amount) : 0;
+  const progressPercent = Math.min(100, Math.round((subtotalNum / FREE_SHIPPING_THRESHOLD) * 100));
+  const diffRemaining = Math.max(0, FREE_SHIPPING_THRESHOLD - subtotalNum);
+
   return (
     <div className="flex flex-col justify-between h-full overflow-hidden">
-      <CartContainer className="flex justify-between text-sm text-muted-foreground">
-        <span>Products</span>
-        <span>{cart.lines.length} items</span>
+      {/* Free Shipping Progress Bar */}
+      <CartContainer className="mb-2">
+        <div className="p-3 rounded-lg bg-popover/80 border border-border/60">
+          <div className="flex items-center justify-between text-xs font-medium mb-1.5">
+            <span className="flex items-center gap-1.5">
+              <Truck className="size-3.5 text-foreground" />
+              {diffRemaining === 0 ? (
+                <span className="text-emerald-400 font-semibold">Free Insured Shipping unlocked!</span>
+              ) : (
+                <span>Add ${diffRemaining.toFixed(2)} more for Free Shipping</span>
+              )}
+            </span>
+            <span className="text-muted-foreground font-mono">{progressPercent}%</span>
+          </div>
+          <div className="w-full h-1.5 rounded-full bg-muted overflow-hidden">
+            <div
+              className={`h-full transition-all duration-500 rounded-full ${
+                diffRemaining === 0 ? 'bg-emerald-400' : 'bg-foreground'
+              }`}
+              style={{ width: `${progressPercent}%` }}
+            />
+          </div>
+        </div>
       </CartContainer>
-      <div className="relative flex-1 min-h-0 py-4 overflow-x-hidden">
+
+      <CartContainer className="flex justify-between text-xs uppercase tracking-wider text-muted-foreground font-mono font-medium">
+        <span>Items in Bag</span>
+        <span>{cart.totalQuantity} {cart.totalQuantity === 1 ? 'item' : 'items'}</span>
+      </CartContainer>
+
+      <div className="relative flex-1 min-h-0 py-3 overflow-x-hidden">
         <CartContainer className="overflow-y-auto flex flex-col gap-y-3 h-full scrollbar-hide">
           <AnimatePresence>
             {cart.lines.map(item => (
@@ -46,24 +78,28 @@ const CartItems = ({ closeCart }: { closeCart: () => void }) => {
           </AnimatePresence>
         </CartContainer>
       </div>
+
       <CartContainer>
-        <div className="py-4 text-sm text-foreground/50 shrink-0">
-          <div className="flex justify-between items-center pb-1 mb-3 border-b border-muted-foreground/20">
-            <p>Taxes</p>
-            <p className="text-right">Calculated at checkout</p>
+        <div className="py-3 text-sm text-foreground/70 shrink-0">
+          <div className="flex justify-between items-center pb-2 mb-2 border-b border-muted-foreground/20 text-xs">
+            <p>Estimated Taxes</p>
+            <p className="text-right text-muted-foreground">Calculated at checkout</p>
           </div>
-          <div className="flex justify-between items-center pt-1 pb-1 mb-3 border-b border-muted-foreground/20">
-            <p>Shipping</p>
-            <p className="text-right">Calculated at checkout</p>
+          <div className="flex justify-between items-center pb-2 mb-2 border-b border-muted-foreground/20 text-xs">
+            <p>Insured Shipping</p>
+            <p className="text-right font-medium text-foreground">
+              {diffRemaining === 0 ? <span className="text-emerald-400">FREE</span> : 'Calculated at checkout'}
+            </p>
           </div>
-          <div className="flex justify-between items-center pt-1 pb-1 mb-1.5 text-lg font-semibold">
-            <p>Total</p>
-            <p className="text-base text-right text-foreground">
+          <div className="flex justify-between items-center pt-1 pb-1 mb-2 text-base font-semibold">
+            <p>Subtotal</p>
+            <p className="text-lg text-right text-foreground font-bold font-mono">
               {formatPrice(cart.cost.totalAmount.amount, cart.cost.totalAmount.currencyCode)}
             </p>
           </div>
         </div>
-        <CheckoutButton />
+
+        <CheckoutButton closeCart={closeCart} />
       </CartContainer>
     </div>
   );
@@ -125,22 +161,17 @@ export default function CartModal() {
   const renderCartContent = () => {
     if (!cart || cart.lines.length === 0) {
       return (
-        <CartContainer className="flex w-full">
-          <Link
-            href="/shop"
-            className="p-2 w-full rounded-lg border border-dashed bg-background border-border"
-            onClick={closeCart}
-          >
-            <div className="flex flex-row gap-6">
-              <div className="flex overflow-hidden relative justify-center items-center rounded-sm border border-dashed size-20 shrink-0 border-border">
-                <PlusCircleIcon className="size-6 text-muted-foreground" />
-              </div>
-              <div className="flex flex-col flex-1 gap-2 justify-center 2xl:gap-3">
-                <span className="text-lg font-semibold 2xl:text-xl">Cart is empty</span>
-                <p className="text-sm text-muted-foreground hover:underline">Start shopping to get started</p>
-              </div>
-            </div>
-          </Link>
+        <CartContainer className="flex flex-col items-center justify-center h-full text-center py-12">
+          <div className="size-16 rounded-full bg-popover flex items-center justify-center mb-4 text-muted-foreground border border-border">
+            <PlusCircleIcon className="size-8" />
+          </div>
+          <h3 className="text-xl font-bold mb-2">Your Bag is Empty</h3>
+          <p className="text-sm text-muted-foreground max-w-xs mb-6 leading-relaxed">
+            Discover our curated catalogue of architectural lighting, acoustics, and timeless design objects.
+          </p>
+          <Button asChild size="default" onClick={closeCart}>
+            <Link href="/shop">Start Browsing</Link>
+          </Button>
         </CartContainer>
       );
     }
@@ -150,7 +181,7 @@ export default function CartModal() {
 
   return (
     <>
-      <Button aria-label="Open cart" onClick={openCart} className="uppercase" size={'sm'}>
+      <Button aria-label="Open cart" onClick={openCart} className="uppercase font-semibold tracking-wide" size={'sm'}>
         <span className="max-md:hidden">cart</span> ({cart?.totalQuantity || 0})
       </Button>
       <AnimatePresence>
@@ -162,7 +193,7 @@ export default function CartModal() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.3, ease: 'easeInOut' }}
-              className="fixed inset-0 z-50 bg-foreground/30"
+              className="fixed inset-0 z-50 bg-foreground/40 backdrop-blur-sm"
               onClick={closeCart}
               aria-hidden="true"
             />
@@ -175,9 +206,14 @@ export default function CartModal() {
               transition={{ duration: 0.3, ease: 'easeInOut' }}
               className="fixed top-0 bottom-0 right-0 flex w-full md:w-[500px] p-modal-sides z-50"
             >
-              <div className="flex flex-col py-3 w-full rounded bg-muted md:py-4">
-                <CartContainer className="flex justify-between items-baseline mb-10">
-                  <p className="text-2xl font-semibold">Cart</p>
+              <div className="flex flex-col py-3 w-full rounded-xl bg-muted border border-border/80 md:py-4 shadow-2xl">
+                <CartContainer className="flex justify-between items-baseline mb-6">
+                  <div className="flex items-baseline gap-2">
+                    <p className="text-2xl font-bold tracking-tight">Shopping Bag</p>
+                    <span className="text-xs text-muted-foreground font-mono">
+                      ({cart?.totalQuantity || 0})
+                    </span>
+                  </div>
                   <Button size="sm" variant="ghost" aria-label="Close cart" onClick={closeCart}>
                     Close
                   </Button>
@@ -193,26 +229,24 @@ export default function CartModal() {
   );
 }
 
-function CheckoutButton() {
+function CheckoutButton({ closeCart }: { closeCart: () => void }) {
   const { pending } = useFormStatus();
   const { cart, isPending } = useCart();
   const router = useRouter();
 
-  const checkoutUrl = cart?.checkoutUrl;
-
+  const checkoutUrl = cart?.checkoutUrl || '/checkout';
   const isLoading = pending;
-  const isDisabled = !checkoutUrl || isPending;
+  const isDisabled = !cart || cart.lines.length === 0 || isPending;
 
   return (
     <Button
-      type="submit"
+      type="button"
       disabled={isDisabled}
       size="lg"
-      className="flex relative gap-3 justify-between items-center w-full"
+      className="flex relative gap-3 justify-between items-center w-full font-semibold"
       onClick={() => {
-        if (checkoutUrl) {
-          router.push(checkoutUrl);
-        }
+        closeCart();
+        router.push(checkoutUrl);
       }}
     >
       <AnimatePresence initial={false} mode="wait">
@@ -229,7 +263,7 @@ function CheckoutButton() {
           ) : (
             <div className="flex justify-between items-center w-full">
               <span>Proceed to Checkout</span>
-              <ArrowRight className="size-6" />
+              <ArrowRight className="size-5" />
             </div>
           )}
         </motion.div>

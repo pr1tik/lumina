@@ -13,6 +13,8 @@ import React, {
 } from 'react';
 import * as CartActions from '@/components/cart/actions';
 
+import { toast } from 'sonner';
+
 export type UpdateType = 'plus' | 'minus' | 'delete';
 
 type CartAction =
@@ -190,6 +192,9 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       startTransition(() => {
         updateOptimisticCart({ type: 'UPDATE_ITEM', payload: { merchandiseId, nextQuantity } });
       });
+      if (nextQuantity === 0) {
+        toast.info('Item removed from cart');
+      }
       const fresh = await CartActions.updateItem({ lineId, quantity: nextQuantity });
       if (fresh) setCart(fresh);
     },
@@ -202,7 +207,8 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       startTransition(() => {
         updateOptimisticCart({ type: 'ADD_ITEM', payload: { variant, product, previousQuantity } });
       });
-      const fresh = await CartActions.addItem(variant.id);
+      toast.success(`Added ${product.title} to cart`);
+      const fresh = await CartActions.addItem(variant.id, variant, product);
       if (fresh) setCart(fresh);
     },
     [updateOptimisticCart, optimisticCart]

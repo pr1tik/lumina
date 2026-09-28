@@ -19,6 +19,14 @@ export const navItems: NavItem[] = [
     href: '/shop/frontpage',
   },
   {
+    label: 'lighting',
+    href: '/shop/lighting',
+  },
+  {
+    label: 'acoustics',
+    href: '/shop/audio',
+  },
+  {
     label: 'shop all',
     href: '/shop',
   },

@@ -74,16 +74,27 @@ function filterProductsByColors(products: Product[], colors: string[]): Product[
 export function ProductListContent({ products, collections }: ProductListContentProps) {
   const { setProducts, setOriginalProducts } = useProducts();
 
-  // Get current color filters from URL
+  // Get current color and search filters from URL
   const [colorFilters] = useQueryState('fcolor', parseAsArrayOf(parseAsString).withDefault([]));
+  const [searchQuery] = useQueryState('q', parseAsString.withDefault(''));
 
-  // Apply client-side filtering whenever products or color filters change
+  // Apply client-side filtering whenever products, search query or color filters change
   const filteredProducts = useMemo(() => {
-    if (!colorFilters || colorFilters.length === 0) {
-      return products;
+    let list = products;
+    if (colorFilters && colorFilters.length > 0) {
+      list = filterProductsByColors(list, colorFilters);
     }
-    return filterProductsByColors(products, colorFilters);
-  }, [products, colorFilters]);
+    if (searchQuery && searchQuery.trim()) {
+      const q = searchQuery.toLowerCase().trim();
+      list = list.filter(
+        p =>
+          p.title.toLowerCase().includes(q) ||
+          p.description.toLowerCase().includes(q) ||
+          p.tags.some(t => t.toLowerCase().includes(q))
+      );
+    }
+    return list;
+  }, [products, colorFilters, searchQuery]);
 
   // Set both original and filtered products in the provider whenever they change
   useEffect(() => {

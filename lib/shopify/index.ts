@@ -1,4 +1,3 @@
-import { cacheLife, cacheTag } from 'next/cache';
 import { TAGS } from '@/lib/constants';
 import {
   getCollections as getShopifyCollections,
@@ -11,7 +10,13 @@ import {
   removeCartLines,
 } from './shopify';
 import { thumbhashToDataURL } from './utils';
-import { getMockProducts, getMockCollections, getMockProduct, getMockCollection } from './mock';
+import {
+  getMockProducts,
+  getMockCollections,
+  getMockProduct,
+  getMockCollection,
+  getMockCollectionProducts,
+} from './mock';
 import type {
   ShopifyProduct,
   ShopifyCollection,
@@ -140,46 +145,42 @@ function adaptShopifyProduct(shopifyProduct: ShopifyProduct): Product {
 
 // Cart adapting happens in server actions to avoid cyclic deps
 
+const hasShopifyConfig = Boolean(process.env.NEXT_PUBLIC_SHOPIFY_STORE_DOMAIN);
+
 // Public API functions
 export async function getCollections(): Promise<Collection[]> {
-  'use cache';
-  cacheTag(TAGS.collections);
-  cacheLife('minutes');
-
+  if (!hasShopifyConfig) {
+    return getMockCollections();
+  }
   try {
     const shopifyCollections = await getShopifyCollections();
     return shopifyCollections.map(adaptShopifyCollection);
   } catch (error) {
-    console.error('Error fetching collections, falling back to mock data:', error);
     return getMockCollections();
   }
 }
 
 export async function getCollection(handle: string): Promise<Collection | null> {
-  'use cache';
-  cacheTag(TAGS.collections);
-  cacheLife('minutes');
-
+  if (!hasShopifyConfig) {
+    return getMockCollection(handle);
+  }
   try {
     const collections = await getShopifyCollections();
     const collection = collections.find(collection => collection.handle === handle);
-    return collection ? adaptShopifyCollection(collection) : null;
+    return collection ? adaptShopifyCollection(collection) : getMockCollection(handle);
   } catch (error) {
-    console.error('Error fetching collection, falling back to mock data:', error);
     return getMockCollection(handle);
   }
 }
 
 export async function getProduct(handle: string): Promise<Product | null> {
-  'use cache';
-  cacheTag(TAGS.products);
-  cacheLife('minutes');
-
+  if (!hasShopifyConfig) {
+    return getMockProduct(handle);
+  }
   try {
     const shopifyProduct = await getShopifyProduct(handle);
-    return shopifyProduct ? adaptShopifyProduct(shopifyProduct) : null;
+    return shopifyProduct ? adaptShopifyProduct(shopifyProduct) : getMockProduct(handle);
   } catch (error) {
-    console.error('Error fetching product, falling back to mock data:', error);
     return getMockProduct(handle);
   }
 }
@@ -190,16 +191,14 @@ export async function getProducts(params: {
   reverse?: boolean;
   query?: string;
 }): Promise<Product[]> {
-  'use cache';
-  cacheTag(TAGS.products);
-  cacheLife('minutes');
-
+  if (!hasShopifyConfig) {
+    return getMockProducts(params);
+  }
   try {
     const shopifyProducts = await getShopifyProducts(params);
     return shopifyProducts.map(adaptShopifyProduct);
   } catch (error) {
-    console.error('Error fetching products, falling back to mock data:', error);
-    return getMockProducts();
+    return getMockProducts(params);
   }
 }
 
@@ -210,16 +209,14 @@ export async function getCollectionProducts(params: {
   reverse?: boolean;
   query?: string;
 }): Promise<Product[]> {
-  'use cache';
-  cacheTag(TAGS.collectionProducts);
-  cacheLife('minutes');
-
+  if (!hasShopifyConfig) {
+    return getMockCollectionProducts(params);
+  }
   try {
     const shopifyProducts = await getShopifyCollectionProducts(params);
     return shopifyProducts.map(adaptShopifyProduct);
   } catch (error) {
-    console.error('Error fetching collection products, falling back to mock data:', error);
-    return getMockProducts();
+    return getMockCollectionProducts(params);
   }
 }
 

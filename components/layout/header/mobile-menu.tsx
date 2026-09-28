@@ -7,9 +7,9 @@ import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { navItems } from './index';
 import { SidebarLinks } from '../sidebar/product-sidebar-links';
-import { ShopLinks } from '../shop-links';
 import { Collection } from '@/lib/shopify/types';
 import { useBodyScrollLock } from '@/lib/hooks/use-body-scroll-lock';
+import { Menu, X, ArrowRight, Search } from 'lucide-react';
 
 interface MobileMenuProps {
   collections: Collection[];
@@ -44,11 +44,11 @@ export default function MobileMenu({ collections }: MobileMenuProps) {
       <Button
         onClick={openMobileMenu}
         aria-label="Open mobile menu"
-        variant="secondary"
+        variant="ghost"
         size="sm"
-        className="uppercase md:hidden"
+        className="px-2 md:hidden"
       >
-        Menu
+        <Menu className="size-5" />
       </Button>
 
       <AnimatePresence>
@@ -60,7 +60,7 @@ export default function MobileMenu({ collections }: MobileMenuProps) {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.3, ease: 'easeInOut' }}
-              className="fixed inset-0 z-50 bg-foreground/30"
+              className="fixed inset-0 z-50 bg-foreground/40 backdrop-blur-sm"
               onClick={closeMobileMenu}
               aria-hidden="true"
             />
@@ -71,44 +71,81 @@ export default function MobileMenu({ collections }: MobileMenuProps) {
               animate={{ x: 0 }}
               exit={{ x: '-100%' }}
               transition={{ duration: 0.3, ease: 'easeInOut' }}
-              className="fixed top-0 bottom-0 left-0 flex w-full md:w-[400px] p-modal-sides z-50"
+              className="fixed top-0 bottom-0 left-0 flex w-full max-w-xs sm:max-w-sm p-3 z-50"
             >
-              <div className="flex flex-col p-3 w-full rounded bg-muted md:p-4">
-                <div className="flex justify-between items-baseline pl-2 mb-10">
-                  <p className="text-2xl font-semibold">Menu</p>
-                  <Button size="sm" variant="ghost" aria-label="Close cart" onClick={closeMobileMenu}>
-                    Close
+              <div className="flex flex-col p-5 w-full rounded-xl bg-muted border border-border shadow-2xl overflow-y-auto">
+                <div className="flex justify-between items-center mb-8">
+                  <div>
+                    <span className="font-black text-xl tracking-tight">LUMINA</span>
+                    <span className="text-[10px] font-mono text-muted-foreground ml-2">NAVIGATION</span>
+                  </div>
+                  <Button size="icon-sm" variant="ghost" aria-label="Close menu" onClick={closeMobileMenu}>
+                    <X className="size-4" />
                   </Button>
                 </div>
 
-                <nav className="grid grid-cols-2 gap-y-4 gap-x-6 mb-10">
+                {/* Mobile Search Link */}
+                <Link
+                  href="/shop"
+                  onClick={closeMobileMenu}
+                  className="flex items-center justify-between p-3 rounded-lg bg-background border border-border text-sm text-muted-foreground mb-6"
+                >
+                  <span className="flex items-center gap-2">
+                    <Search className="size-4" />
+                    <span>Search catalogue...</span>
+                  </span>
+                  <ArrowRight className="size-4" />
+                </Link>
+
+                <nav className="flex flex-col gap-1.5 mb-8">
+                  <span className="text-[11px] font-mono uppercase tracking-wider text-muted-foreground mb-1">
+                    Explore
+                  </span>
                   {navItems.map(item => (
-                    <Button
+                    <Link
                       key={item.href}
-                      size="sm"
-                      variant="secondary"
+                      href={item.href}
                       onClick={closeMobileMenu}
-                      className="justify-start uppercase bg-background/50"
-                      asChild
+                      className={`px-3 py-2.5 rounded-lg text-sm font-semibold transition-all flex items-center justify-between ${
+                        pathname === item.href
+                          ? 'bg-foreground text-background'
+                          : 'text-foreground/80 hover:bg-background/80 hover:text-foreground'
+                      }`}
+                      prefetch
                     >
-                      <Link href={item.href} prefetch>
-                        {item.label}
-                      </Link>
-                    </Button>
+                      <span>{item.label}</span>
+                      <ArrowRight className="size-3.5 opacity-60" />
+                    </Link>
                   ))}
                 </nav>
 
-                <ShopLinks label="Categories" collections={collections} />
-
-                <div className="mt-auto mb-6 text-sm leading-tight opacity-50">
-                  <p className="italic">Bold. Vibrant. Unapologetic.</p>
-                  <div className="mt-5">
-                    <p>Designs that demand attention.</p>
-                    <p>Vibrant colors, crafted with passion.</p>
-                    <p>Elegance with a wink — style first</p>
+                {/* Curated Categories */}
+                <div className="mb-8">
+                  <span className="text-[11px] font-mono uppercase tracking-wider text-muted-foreground block mb-2">
+                    Curations
+                  </span>
+                  <div className="flex flex-col gap-1">
+                    {collections.map(col => (
+                      <Link
+                        key={col.handle}
+                        href={`/shop/${col.handle}`}
+                        onClick={closeMobileMenu}
+                        className="px-3 py-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors"
+                      >
+                        {col.title}
+                      </Link>
+                    ))}
                   </div>
                 </div>
-                <SidebarLinks className="gap-2 w-full" />
+
+                <div className="mt-auto pt-6 border-t border-border/80 text-xs text-muted-foreground">
+                  <p className="font-semibold text-foreground mb-1">Lumina Design Studio</p>
+                  <p className="leading-relaxed">Architectural acoustics, circadian lighting, and timeless minimal essentials.</p>
+                  <div className="mt-4">
+                    <SidebarLinks className="gap-2 w-full" size="sm" />
+                  </div>
+                </div>
+
               </div>
             </motion.div>
           </>

@@ -1,5 +1,4 @@
 import type { Metadata } from 'next';
-import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
 import { Toaster } from 'sonner';
 import { NuqsAdapter } from 'nuqs/adapters/next/app';
@@ -16,20 +15,11 @@ const V0Setup = dynamic(() => import('@/components/v0-setup'));
 
 const isV0 = process.env['VERCEL_URL']?.includes('vusercontent.net') ?? false;
 
-const geistSans = Geist({
-  variable: '--font-geist-sans',
-  subsets: ['latin'],
-});
-
-const geistMono = Geist_Mono({
-  variable: '--font-geist-mono',
-  subsets: ['latin'],
-});
-
 export const metadata: Metadata = {
-  title: 'Lumina',
-  description: 'Lumina, your one-stop shop for all your premium needs.',
-    generator: 'v0.app'
+  metadataBase: new URL('https://lumina.store'),
+  title: 'Lumina | Premium Modern Living & Tech Essentials',
+  description: 'Lumina — your premier curated destination for contemporary design, sleek tech, and timeless lifestyle essentials.',
+  generator: 'v0.app'
 };
 
 export default async function RootLayout({
@@ -42,7 +32,7 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body
-        className={cn(geistSans.variable, geistMono.variable, 'antialiased min-h-screen', { 'is-v0': isV0 })}
+        className={cn('antialiased min-h-screen font-sans', { 'is-v0': isV0 })}
         suppressHydrationWarning
       >
         <V0Provider isV0={isV0}>

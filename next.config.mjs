@@ -1,12 +1,7 @@
+/** @type {import('next').NextConfig} */
 const nextConfig = {
-  /* config options here */
   experimental: {
     inlineCss: true,
-    useCache: true,
-    clientSegmentCache: true,
-  },
-  eslint: {
-    ignoreDuringBuilds: true,
   },
   typescript: {
     ignoreBuildErrors: true,
@@ -22,6 +17,10 @@ const nextConfig = {
       {
         protocol: 'https',
         hostname: 'edge.disstg.commercecloud.salesforce.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'images.unsplash.com',
       },
     ],
   },

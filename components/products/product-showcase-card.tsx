@@ -1,24 +1,26 @@
 'use client';
 
 import React, { useState, useTransition } from 'react';
-import Link from 'next/link';
 import Image from 'next/image';
+import Link from 'next/link';
 import { Product } from '@/lib/shopify/types';
 import { useCart } from '@/components/cart/cart-context';
 import { formatPrice } from '@/lib/shopify/utils';
-import { Plus, ArrowRight } from 'lucide-react';
+import { Plus, Check, ArrowRight } from 'lucide-react';
+import { toast } from 'sonner';
 
-interface ProductCardProps {
+interface ProductShowcaseCardProps {
   product: Product;
+  priority?: boolean;
 }
 
-export function ProductCard({ product }: ProductCardProps) {
+export function ProductShowcaseCard({ product, priority = false }: ProductShowcaseCardProps) {
   const { addItem } = useCart();
   const [isPending, startTransition] = useTransition();
-  const [activeVariantIndex, setActiveVariantIndex] = useState(0);
+  const [selectedColorIndex, setSelectedColorIndex] = useState(0);
 
   const images = product.images.length > 0 ? product.images : [product.featuredImage];
-  const currentImage = images[activeVariantIndex] || product.featuredImage;
+  const activeImage = images[selectedColorIndex] || product.featuredImage;
 
   const colorOption = product.options.find(
     o => o.name.toLowerCase() === 'color' || o.name.toLowerCase() === 'colour'
@@ -28,7 +30,7 @@ export function ProductCard({ product }: ProductCardProps) {
     e.preventDefault();
     e.stopPropagation();
 
-    const selectedVariant = product.variants[activeVariantIndex] || product.variants[0];
+    const selectedVariant = product.variants[selectedColorIndex] || product.variants[0];
     if (!selectedVariant) return;
 
     startTransition(async () => {
@@ -37,47 +39,36 @@ export function ProductCard({ product }: ProductCardProps) {
   };
 
   return (
-    <div className="group relative flex flex-col bg-muted/50 rounded-2xl overflow-hidden border border-border/80 hover:border-foreground/40 transition-all duration-300 shadow-sm">
+    <div className="group relative flex flex-col bg-muted/60 rounded-2xl overflow-hidden border border-border/70 hover:border-foreground/30 transition-all duration-300">
       
       {/* Product Image Frame */}
       <Link
         href={`/product/${product.handle}`}
-        className="relative aspect-[4/5] sm:aspect-square w-full overflow-hidden bg-popover block"
+        className="relative aspect-square w-full overflow-hidden bg-popover block"
         prefetch
       >
         <Image
-          src={currentImage.url}
-          alt={currentImage.altText || product.title}
+          src={activeImage.url}
+          alt={activeImage.altText || product.title}
           fill
-          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+          priority={priority}
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
         />
 
-        {/* Top Badges */}
-        <div className="absolute top-3 inset-x-3 z-10 flex items-center justify-between pointer-events-none">
-          {product.modelNumber ? (
-            <span className="px-2 py-0.5 rounded text-[10px] font-mono tracking-widest bg-background/85 backdrop-blur-md text-foreground border border-border/60">
-              {product.modelNumber}
-            </span>
-          ) : (
-            <span className="px-2 py-0.5 rounded text-[10px] font-mono tracking-widest uppercase bg-background/85 backdrop-blur-md text-foreground border border-border/60">
-              {product.categoryId}
-            </span>
-          )}
-
-          {product.compareAtPrice && (
-            <span className="px-2 py-0.5 rounded text-[10px] font-mono font-semibold bg-foreground text-background">
-              SPECIAL
-            </span>
-          )}
+        {/* Category tag */}
+        <div className="absolute top-3 left-3 z-10">
+          <span className="px-2.5 py-1 rounded-full text-[10px] font-mono uppercase tracking-wider bg-background/80 backdrop-blur-md text-foreground border border-border/60">
+            {product.categoryId || 'Design'}
+          </span>
         </div>
 
-        {/* Quick Add Overlay on Desktop */}
+        {/* Quick Add Overlay Button on Desktop */}
         <button
           type="button"
           onClick={handleQuickAdd}
           disabled={isPending}
-          className="absolute bottom-3 right-3 z-10 size-10 rounded-full bg-foreground text-background flex items-center justify-center shadow-lg opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-200 hover:scale-105 active:scale-95 disabled:opacity-50"
+          className="absolute bottom-3 right-3 z-10 size-10 rounded-full bg-foreground text-background flex items-center justify-center shadow-lg opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 hover:scale-105 active:scale-95 disabled:opacity-50"
           title="Quick add to bag"
         >
           {isPending ? (
@@ -88,64 +79,68 @@ export function ProductCard({ product }: ProductCardProps) {
         </button>
       </Link>
 
-      {/* Product Details Under Image */}
-      <div className="p-4 sm:p-5 flex flex-col flex-1 justify-between gap-3 bg-muted/40">
+      {/* Info Content */}
+      <div className="p-5 flex flex-col flex-1 justify-between gap-3">
         <div>
-          {/* Color swatch selector */}
+          {/* Color swatches preview if available */}
           {colorOption && colorOption.values.length > 1 && (
-            <div className="flex items-center gap-1.5 mb-2">
+            <div className="flex items-center gap-1.5 mb-2.5">
               {colorOption.values.map((val, idx) => (
                 <button
                   key={val.id}
                   type="button"
-                  onClick={() => setActiveVariantIndex(idx)}
-                  className={`size-3 rounded-full border transition-all ${
-                    activeVariantIndex === idx
+                  onClick={() => setSelectedColorIndex(idx)}
+                  className={`size-3.5 rounded-full border transition-all ${
+                    selectedColorIndex === idx
                       ? 'ring-2 ring-foreground scale-110 border-transparent'
                       : 'border-border/80 hover:scale-105'
                   }`}
                   style={{
                     backgroundColor:
-                      val.name.toLowerCase().includes('black')
+                      val.name.toLowerCase() === 'black'
                         ? '#171717'
-                        : val.name.toLowerCase().includes('white')
-                        ? '#f5f5f5'
-                        : val.name.toLowerCase().includes('silver')
-                        ? '#d1d5db'
-                        : val.name.toLowerCase().includes('gold')
+                        : val.name.toLowerCase() === 'white'
+                        ? '#fafafa'
+                        : val.name.toLowerCase() === 'silver'
+                        ? '#d4d4d8'
+                        : val.name.toLowerCase() === 'gold'
                         ? '#d4af37'
-                        : val.name.toLowerCase().includes('stone')
-                        ? '#9ca3af'
-                        : val.name.toLowerCase().includes('olive')
-                        ? '#4d5d34'
-                        : val.name.toLowerCase().includes('sand')
-                        ? '#d8c29d'
-                        : val.name.toLowerCase().includes('navy')
+                        : val.name.toLowerCase() === 'stone'
+                        ? '#a1a1aa'
+                        : val.name.toLowerCase() === 'olive'
+                        ? '#556b2f'
+                        : val.name.toLowerCase() === 'sand'
+                        ? '#e5d3b3'
+                        : val.name.toLowerCase() === 'navy'
                         ? '#1e293b'
-                        : val.name.toLowerCase().includes('terra')
-                        ? '#b45309'
-                        : val.name.toLowerCase().includes('green')
-                        ? '#1b4332'
+                        : val.name.toLowerCase() === 'terracotta'
+                        ? '#c86446'
+                        : val.name.toLowerCase() === 'green'
+                        ? '#2e4f3c'
+                        : val.name.toLowerCase() === 'brown'
+                        ? '#6d4c41'
+                        : val.name.toLowerCase() === 'tan'
+                        ? '#d2b48c'
                         : '#737373',
                   }}
-                  title={val.name}
+                  title={`Color: ${val.name}`}
                 />
               ))}
               <span className="text-[10px] text-muted-foreground ml-1 font-mono">
-                {colorOption.values[activeVariantIndex]?.name}
+                {colorOption.values[selectedColorIndex]?.name}
               </span>
             </div>
           )}
 
           <Link href={`/product/${product.handle}`} className="block group-hover:underline">
-            <h3 className="text-sm sm:text-base font-bold text-foreground line-clamp-1">{product.title}</h3>
+            <h3 className="text-base font-bold text-foreground line-clamp-1">{product.title}</h3>
           </Link>
           <p className="text-xs text-muted-foreground line-clamp-2 mt-1 leading-relaxed">
             {product.description}
           </p>
         </div>
 
-        {/* Pricing and Action */}
+        {/* Price & Mobile Add Button */}
         <div className="flex items-center justify-between pt-3 border-t border-border/50">
           <div className="flex items-baseline gap-2">
             <span className="text-base font-bold font-mono">
@@ -171,7 +166,7 @@ export function ProductCard({ product }: ProductCardProps) {
             href={`/product/${product.handle}`}
             className="hidden md:flex items-center gap-1 text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors"
           >
-            <span>Inspect</span>
+            <span>Details</span>
             <ArrowRight className="size-3" />
           </Link>
         </div>

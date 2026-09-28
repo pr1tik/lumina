@@ -16,7 +16,7 @@ export const ProductCard = ({ product }: { product: Product }) => {
   const renderInCardAddToCart = hasNoOptions || hasOneOptionWithOneValue || justHasColorOption;
 
   return (
-    <div className="relative w-full aspect-[3/4] md:aspect-square bg-muted group overflow-hidden">
+    <div className="relative w-full aspect-square bg-muted/60 rounded-2xl border border-border group overflow-hidden transition-all duration-300 hover:border-foreground/30 shadow-sm">
       <Link
         href={`/product/${product.handle}`}
         className="block size-full focus-visible:outline-none"

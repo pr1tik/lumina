@@ -21,6 +21,14 @@ export const CONTACT_LINKS: NavItem[] = [
     label: 'Instagram',
     href: '#',
   },
+  {
+    label: 'Terms of Service',
+    href: '/policies/terms-of-service',
+  },
+  {
+    label: 'Shipping Policy',
+    href: '/policies/shipping',
+  },
 ];
 
 export const HIDDEN_PRODUCT_TAG = 'nextjs-frontend-hidden';

@@ -19,7 +19,7 @@ export default async function Home() {
   const [heroProduct, ...restProducts] = featuredProducts;
 
   return (
-    <div className="bg-neutral-950 text-white min-h-screen">
+    <PageLayout className="bg-neutral-950 text-white min-h-screen">
       <section className="relative w-full h-screen overflow-hidden flex flex-col justify-center items-center">
         {heroProduct && (
           <>
@@ -190,6 +190,6 @@ export default async function Home() {
           </motion.form>
         </div>
       </section>
-    </div>
+    </PageLayout>
   );
 }

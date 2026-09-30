@@ -22,6 +22,14 @@ export const navItems: NavItem[] = [
     label: 'shop all',
     href: '/shop',
   },
+  {
+    label: 'account',
+    href: '/account',
+  },
+  {
+    label: 'admin',
+    href: '/admin',
+  },
 ];
 
 interface HeaderProps {

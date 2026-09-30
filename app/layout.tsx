@@ -26,10 +26,34 @@ const geistMono = Geist_Mono({
   subsets: ['latin'],
 });
 
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
+
 export const metadata: Metadata = {
-  title: 'Lumina',
-  description: 'Lumina, your one-stop shop for all your premium needs.',
-    generator: 'v0.app'
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: 'Lumina | Premium Tech Essentials',
+    template: '%s | Lumina'
+  },
+  description: 'Lumina, your one-stop shop for premium, uncompromising tech essentials.',
+  keywords: ['tech', 'premium tech', 'headphones', 'smartwatch', 'accessories', 'lumina'],
+  openGraph: {
+    type: 'website',
+    locale: 'en_US',
+    url: SITE_URL,
+    siteName: 'Lumina',
+    title: 'Lumina | Premium Tech Essentials',
+    description: 'Lumina, your one-stop shop for premium, uncompromising tech essentials.',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Lumina | Premium Tech Essentials',
+    description: 'Lumina, your one-stop shop for premium, uncompromising tech essentials.',
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
+  generator: 'v0.app'
 };
 
 export default async function RootLayout({

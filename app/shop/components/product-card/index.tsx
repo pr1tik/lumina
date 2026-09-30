@@ -16,7 +16,7 @@ export const ProductCard = ({ product }: { product: Product }) => {
   const renderInCardAddToCart = hasNoOptions || hasOneOptionWithOneValue || justHasColorOption;
 
   return (
-    <div className="relative w-full aspect-[3/4] md:aspect-square bg-muted group overflow-hidden">
+    <div className="relative w-full aspect-[3/4] md:aspect-square bg-muted group overflow-hidden md:rounded-3xl shadow-sm">
       <Link
         href={`/product/${product.handle}`}
         className="block size-full focus-visible:outline-none"
@@ -29,26 +29,26 @@ export const ProductCard = ({ product }: { product: Product }) => {
       </Link>
 
       {/* Interactive Overlay */}
-      <div className="absolute inset-0 p-2 w-full pointer-events-none">
-        <div className="flex gap-6 justify-between items-baseline px-3 py-1 w-full font-semibold transition-all duration-300 translate-y-0 max-md:hidden group-hover:opacity-0 group-focus-visible:opacity-0 group-hover:-translate-y-full group-focus-visible:-translate-y-full">
-          <p className="text-sm uppercase 2xl:text-base text-balance">{product.title}</p>
+      <div className="absolute inset-0 p-3 w-full pointer-events-none">
+        <div className="flex gap-6 justify-between items-baseline px-4 py-2 w-full font-medium transition-all duration-300 translate-y-0 max-md:hidden group-hover:opacity-0 group-focus-visible:opacity-0 group-hover:-translate-y-full group-focus-visible:-translate-y-full">
+          <p className="text-sm uppercase tracking-wider 2xl:text-base text-balance">{product.title}</p>
           <div className="flex gap-2 items-center text-sm uppercase 2xl:text-base">
             {formatPrice(product.priceRange.minVariantPrice.amount, product.priceRange.minVariantPrice.currencyCode)}
             {product.compareAtPrice && (
-              <span className="line-through opacity-30">
+              <span className="line-through opacity-40">
                 {formatPrice(product.compareAtPrice.amount, product.compareAtPrice.currencyCode)}
               </span>
             )}
           </div>
         </div>
 
-        <div className="flex absolute inset-x-3 bottom-3 flex-col gap-8 px-2 py-3 rounded-md transition-all duration-300 pointer-events-none bg-popover md:opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 md:translate-y-1/3 group-hover:translate-y-0 group-focus-visible:translate-y-0 group-hover:pointer-events-auto group-focus-visible:pointer-events-auto max-md:pointer-events-auto">
-          <div className="grid grid-cols-2 gap-x-4 gap-y-8 items-end">
-            <p className="text-lg font-semibold text-pretty">{product.title}</p>
-            <div className="flex gap-2 items-center place-self-end text-lg font-semibold">
+        <div className="flex absolute inset-x-4 bottom-4 flex-col gap-6 px-4 py-5 rounded-2xl transition-all duration-300 pointer-events-none backdrop-blur-xl bg-white/70 dark:bg-black/50 border border-white/20 dark:border-white/10 shadow-xl md:opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 md:translate-y-1/3 group-hover:translate-y-0 group-focus-visible:translate-y-0 group-hover:pointer-events-auto group-focus-visible:pointer-events-auto max-md:pointer-events-auto">
+          <div className="grid grid-cols-2 gap-x-4 gap-y-6 items-end">
+            <p className="text-lg font-light tracking-tight text-pretty">{product.title}</p>
+            <div className="flex gap-2 items-center place-self-end text-lg font-light">
               {formatPrice(product.priceRange.minVariantPrice.amount, product.priceRange.minVariantPrice.currencyCode)}
               {product.compareAtPrice && (
-                <span className="text-base line-through opacity-30">
+                <span className="text-sm line-through opacity-40">
                   {formatPrice(product.compareAtPrice.amount, product.compareAtPrice.currencyCode)}
                 </span>
               )}
@@ -64,15 +64,15 @@ export const ProductCard = ({ product }: { product: Product }) => {
             )}
 
             {renderInCardAddToCart ? (
-              <Suspense fallback={<AddToCartButton className="col-start-2" product={product} size="sm" />}>
-                <AddToCart className="col-start-2" size="sm" product={product} />
+              <Suspense fallback={<AddToCartButton className="col-start-2 rounded-full font-medium" product={product} size="sm" />}>
+                <AddToCart className="col-start-2 rounded-full font-medium" size="sm" product={product} />
               </Suspense>
             ) : (
-              <Button className="col-start-2" size="sm" variant="default" asChild>
+              <Button className="col-start-2 rounded-full font-medium" size="sm" variant="default" asChild>
                 <Link href={`/product/${product.handle}`}>
-                  <div className="flex justify-between items-center w-full">
+                  <div className="flex justify-between items-center w-full px-2">
                     <span>View Product</span>
-                    <ArrowRightIcon />
+                    <ArrowRightIcon className="w-4 h-4" />
                   </div>
                 </Link>
               </Button>

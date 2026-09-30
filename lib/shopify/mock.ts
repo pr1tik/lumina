@@ -1,39 +1,48 @@
 import type { Product, Collection } from './types';
 
 const MOCK_IMAGES = [
-  'https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=800&auto=format&fit=crop', // Watch
-  'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?q=80&w=800&auto=format&fit=crop', // Headphones
-  'https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?q=80&w=800&auto=format&fit=crop', // Camera
-  'https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=800&auto=format&fit=crop', // Shoes
-  'https://images.unsplash.com/photo-1503602642458-232111445657?q=80&w=800&auto=format&fit=crop', // Chair
-  'https://images.unsplash.com/photo-1572635196237-14b3f281503f?q=80&w=800&auto=format&fit=crop', // Sunglasses
+  '/lumina_headphones_1790748319098.png', 
+  '/lumina_smartwatch_1790748351632.png',
+  '/lumina_camera_1790748394804.png',
+  'https://images.unsplash.com/photo-1608231387042-66d1773070a5?q=80&w=800&auto=format&fit=crop', 
+  'https://images.unsplash.com/photo-1590658268037-6bf12165a8df?q=80&w=800&auto=format&fit=crop', 
+  'https://images.unsplash.com/photo-1595225476474-87563907a212?q=80&w=800&auto=format&fit=crop', 
+];
+
+const MOCK_PRODUCTS_DATA = [
+  { title: "Lumina H1 Pro ANC Headphones", desc: "Experience premium quality with our signature noise-cancelling headphones. Designed with precision and crafted for the modern audiophile.", price: 299 },
+  { title: "Lumina Watch Series X", desc: "A sleek, minimalist smartwatch with a premium metal band. Track your health, stay connected, and look good doing it.", price: 349 },
+  { title: "Lumina CaptureX Camera", desc: "Vintage-inspired modern digital camera with silver and black leather finish. Premium mirrorless technology for professional photography.", price: 1299 },
+  { title: "Lumina SoundCore Speaker", desc: "Minimalist smart home speaker with premium acoustic design. Deep bass and crystal-clear highs for any room.", price: 199 },
+  { title: "Lumina Pods True Wireless", desc: "True wireless earbuds in a sleek charging case. Matte white finish and premium sound quality.", price: 149 },
+  { title: "Lumina MechX Keyboard", desc: "Premium mechanical keyboard with a low-profile aluminum chassis. Minimalist layout for ultimate productivity.", price: 179 }
 ];
 
 export function getMockProducts(): Product[] {
   return Array.from({ length: 6 }).map((_, i) => ({
     id: `mock-product-${i}`,
     handle: `lumina-product-${i}`,
-    title: `Lumina Signature Edition ${i + 1}`,
-    description: 'Experience premium quality with our signature collection. Designed with precision and crafted for the modern aesthetic.',
-    descriptionHtml: '<p>Experience premium quality with our signature collection. Designed with precision and crafted for the modern aesthetic.</p>',
+    title: MOCK_PRODUCTS_DATA[i].title,
+    description: MOCK_PRODUCTS_DATA[i].desc,
+    descriptionHtml: `<p>${MOCK_PRODUCTS_DATA[i].desc}</p>`,
     availableForSale: true,
     categoryId: 'electronics',
-    tags: ['premium', 'new'],
+    tags: ['premium', 'new', 'featured'],
     currencyCode: 'USD',
     priceRange: {
-      minVariantPrice: { amount: `${99 + i * 50}`, currencyCode: 'USD' },
-      maxVariantPrice: { amount: `${99 + i * 50}`, currencyCode: 'USD' },
+      minVariantPrice: { amount: `${MOCK_PRODUCTS_DATA[i].price}`, currencyCode: 'USD' },
+      maxVariantPrice: { amount: `${MOCK_PRODUCTS_DATA[i].price}`, currencyCode: 'USD' },
     },
     featuredImage: {
-      url: MOCK_IMAGES[i % MOCK_IMAGES.length],
-      altText: `Lumina Product ${i + 1}`,
+      url: MOCK_IMAGES[i],
+      altText: MOCK_PRODUCTS_DATA[i].title,
       width: 800,
       height: 800,
     },
     images: [
       {
-        url: MOCK_IMAGES[i % MOCK_IMAGES.length],
-        altText: `Lumina Product ${i + 1}`,
+        url: MOCK_IMAGES[i],
+        altText: MOCK_PRODUCTS_DATA[i].title,
         width: 800,
         height: 800,
       }
@@ -53,13 +62,13 @@ export function getMockProducts(): Product[] {
         id: `mock-variant-${i}-1`,
         title: 'Black',
         availableForSale: true,
-        price: { amount: `${99 + i * 50}`, currencyCode: 'USD' },
+        price: { amount: `${MOCK_PRODUCTS_DATA[i].price}`, currencyCode: 'USD' },
         selectedOptions: [{ name: 'Color', value: 'Black' }]
       }
     ],
     seo: {
-      title: `Lumina Signature Edition ${i + 1}`,
-      description: 'Premium quality product designed with precision.'
+      title: MOCK_PRODUCTS_DATA[i].title,
+      description: MOCK_PRODUCTS_DATA[i].desc
     },
     updatedAt: new Date().toISOString(),
     createdAt: new Date().toISOString(),
@@ -77,6 +86,7 @@ export function getMockCollections(): Collection[] {
         title: 'Featured Collection',
         description: 'Our handpicked selection of premium items.',
       },
+      parentCategoryTree: [],
       updatedAt: new Date().toISOString(),
       path: '/shop/frontpage',
     },
@@ -89,6 +99,7 @@ export function getMockCollections(): Collection[] {
         title: 'New Arrivals',
         description: 'The latest additions to the Lumina catalog.',
       },
+      parentCategoryTree: [],
       updatedAt: new Date().toISOString(),
       path: '/shop/new-arrivals',
     },

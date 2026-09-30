@@ -30,7 +30,7 @@ export function SidebarLinks({ className, invert, size }: SidebarLinksProps) {
   return (
     <ul className={cn('flex flex-row gap-2 justify-between', className)}>
       {CONTACT_LINKS.map(link => (
-        <li key={link.href}>
+        <li key={link.label}>
           <Link href={link.href} target="_blank" className={linkVariants({ invert, size })}>
             {link.label}
           </Link>

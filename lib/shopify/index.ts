@@ -150,7 +150,7 @@ export async function getCollections(): Promise<Collection[]> {
     const shopifyCollections = await getShopifyCollections();
     return shopifyCollections.map(adaptShopifyCollection);
   } catch (error) {
-    console.error('Error fetching collections, falling back to mock data:', error);
+    // Silently fall back to mock data
     return getMockCollections();
   }
 }
@@ -165,7 +165,7 @@ export async function getCollection(handle: string): Promise<Collection | null> 
     const collection = collections.find(collection => collection.handle === handle);
     return collection ? adaptShopifyCollection(collection) : null;
   } catch (error) {
-    console.error('Error fetching collection, falling back to mock data:', error);
+    // Silently fall back to mock data
     return getMockCollection(handle);
   }
 }
@@ -179,7 +179,7 @@ export async function getProduct(handle: string): Promise<Product | null> {
     const shopifyProduct = await getShopifyProduct(handle);
     return shopifyProduct ? adaptShopifyProduct(shopifyProduct) : null;
   } catch (error) {
-    console.error('Error fetching product, falling back to mock data:', error);
+    // Silently fall back to mock data
     return getMockProduct(handle);
   }
 }
@@ -198,7 +198,7 @@ export async function getProducts(params: {
     const shopifyProducts = await getShopifyProducts(params);
     return shopifyProducts.map(adaptShopifyProduct);
   } catch (error) {
-    console.error('Error fetching products, falling back to mock data:', error);
+    // Silently fall back to mock data
     return getMockProducts();
   }
 }
@@ -218,7 +218,7 @@ export async function getCollectionProducts(params: {
     const shopifyProducts = await getShopifyCollectionProducts(params);
     return shopifyProducts.map(adaptShopifyProduct);
   } catch (error) {
-    console.error('Error fetching collection products, falling back to mock data:', error);
+    // Silently fall back to mock data
     return getMockProducts();
   }
 }

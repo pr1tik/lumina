@@ -44,7 +44,7 @@ async function shopifyFetch<T>({
 
     return json;
   } catch (error) {
-    console.error('Shopify fetch error:', error);
+    // Silently throw to allow fallback handlers to catch it without flooding console
     throw error;
   }
 }

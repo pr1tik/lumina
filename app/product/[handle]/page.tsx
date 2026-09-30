@@ -99,7 +99,7 @@ export default async function ProductPage(props: { params: Promise<{ handle: str
     },
   };
 
-  const [rootParentCategory] = collection?.parentCategoryTree.filter(
+  const [rootParentCategory] = collection?.parentCategoryTree?.filter(
     (c: any) => c.id !== storeCatalog.rootCategoryId
   ) ?? [undefined];
 
@@ -153,19 +153,19 @@ export default async function ProductPage(props: { params: Promise<{ handle: str
               </BreadcrumbList>
             </Breadcrumb>
 
-            <div className="flex flex-col col-span-full gap-4 md:mb-10 max-md:order-2">
-              <div className="flex flex-col grid-cols-2 px-3 py-2 rounded-md bg-popover md:grid md:gap-x-4 md:gap-y-10 place-items-baseline">
-                <h1 className="text-lg font-semibold lg:text-xl 2xl:text-2xl text-balance max-md:mb-4">
+            <div className="flex flex-col col-span-full gap-6 md:mb-10 max-md:order-2">
+              <div className="flex flex-col grid-cols-2 p-6 rounded-2xl bg-white dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 shadow-sm md:grid md:gap-x-4 md:gap-y-10 place-items-baseline">
+                <h1 className="text-2xl font-light tracking-tight lg:text-3xl 2xl:text-4xl text-balance max-md:mb-4">
                   {product.title}
                 </h1>
-                <p className="text-sm font-medium">{product.description}</p>
-                <p className="flex gap-3 items-center text-lg font-semibold lg:text-xl 2xl:text-2xl max-md:mt-8">
+                <p className="text-sm font-medium text-neutral-500 leading-relaxed">{product.description}</p>
+                <p className="flex gap-3 items-center text-2xl font-light lg:text-3xl 2xl:text-4xl max-md:mt-8">
                   {formatPrice(
                     product.priceRange.minVariantPrice.amount,
                     product.priceRange.minVariantPrice.currencyCode
                   )}
                   {product.compareAtPrice && (
-                    <span className="line-through opacity-30">
+                    <span className="line-through text-lg opacity-40">
                       {formatPrice(product.compareAtPrice.amount, product.compareAtPrice.currencyCode)}
                     </span>
                   )}
